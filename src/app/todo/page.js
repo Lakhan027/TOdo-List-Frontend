@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import LoaderButton from '../components/LoaderButton/page';
 
 
  const API_URL=process.env.NEXT_PUBLIC_API_URL;
@@ -12,7 +13,9 @@ export default function Home() {
   const [title, setTitle] = useState('');
   const [task, setTask] = useState('');
   const [todos, setTodos] = useState([]);
+   
   const [refresh, setRefresh] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const router = useRouter();
 
@@ -49,6 +52,7 @@ export default function Home() {
 
 
   const handleAddTodo = async () => {
+      setLoading(true);
 
     try {
       const res = await fetch(`${API_URL}/todos`, {
@@ -67,8 +71,9 @@ export default function Home() {
         setTodos((prevTodos) => [...prevTodos, data]);
         setRefresh(prev => !prev)
       } else {
-        setMessage('❌ Todo Data not Added successfully!');
+        alert('❌ Todo Data not Added successfully!');
       }
+        setLoading(false);
 
 
     } catch (error) {
@@ -166,29 +171,27 @@ export default function Home() {
         <div className="max-w-3xl mx-auto bg-white p-8 rounded-3xl shadow-xl border">
           <h1 className="text-4xl font-extrabold text-indigo-700 mb-6 text-center">📝 My Todo List</h1>
 
-          <div className="grid md:grid-cols-2 gap-4 mb-4">
-            <input
-              type="text"
-              placeholder="Enter title (e.g. Grocery)"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400"
-            />
-            <input
-              type="text"
-              placeholder="Enter task (e.g. Buy groceries)"
-              value={task}
-              onChange={(e) => setTask(e.target.value)}
-              className="p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-400"
-            />
-          </div>
+         <div className="grid md:grid-cols-2 gap-4 mb-4">
+  <input
+    type="text"
+    placeholder="Enter title (e.g. Grocery)"
+    value={title}
+    onChange={(e) => setTitle(e.target.value)}
+    className="p-3 border border-gray-300 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-400"
+  />
+  <input
+    type="text"
+    placeholder="Enter task (e.g. Buy groceries)"
+    value={task}
+    onChange={(e) => setTask(e.target.value)}
+    className="p-3 border border-gray-300 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-400"
+  />
+</div>
 
-          <button
-            onClick={handleAddTodo}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl transition"
-          >
-            ➕ Add Todo
-          </button>
+
+         <LoaderButton loading={loading} onClick={handleAddTodo}>
+  ➕ Add Todo
+</LoaderButton>
 
 
 
@@ -246,46 +249,3 @@ export default function Home() {
   );
 }
 
-
-
-// <div className="mt-8">
-//       {todos.length === 0 ? (
-//         <p className="text-gray-400 text-center mt-6">No todos added yet.</p>
-//       ) : (
-//         <ul className="space-y-4">
-//           {todos.map((todo) => (
-//             <li
-//               key={todo.id}
-//               className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all"
-//             >
-//               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between w-full sm:gap-6">
-//                 {/* Left side: Title + Task */}
-//                 <div className="flex flex-col sm:flex-row sm:items-center sm:gap-6">
-//                   <div className="font-bold text-indigo-700 text-lg">{todo.title}</div>
-//                   <div className="text-gray-700 text-sm sm:text-base">{todo.task}</div>
-//                 </div>
-
-//                 {/* Right side: Status + Delete */}
-//                 <div className="flex items-center gap-3 mt-3 sm:mt-0">
-//                   <span
-//                     className={`text-xs font-semibold px-3 py-1 rounded-full ${getStatusStyle(
-//                       todo.status
-//                     )}`}
-//                   >
-//                     {todo.status}
-//                   </span>
-//                   <button
-//                     onClick={() => handleDelete(todo.id)}
-//                     className="text-red-500 hover:text-red-700 transition"
-//                     title="Delete"
-//                   >
-//                     <Trash2 size={18} />
-//                   </button>
-//                 </div>
-//               </div>
-//             </li>
-//           ))}
-//         </ul>
-
-//       )}
-//     </div>
